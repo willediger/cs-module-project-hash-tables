@@ -11,6 +11,8 @@ class HashTableEntry:
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
+FNV1A_64_OFFSET = 0xcbf29ce484222325
+FNV1A_64_PRIME = 0x100000001b3
 
 class HashTable:
     """
@@ -21,7 +23,9 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
+        self.capacity = max(capacity, MIN_CAPACITY)
+        self.table = [None]*self.capacity
+        self.items_count = 0
 
 
     def get_num_slots(self):
@@ -34,7 +38,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return len(self.table)
 
 
     def get_load_factor(self):
@@ -43,7 +47,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.items_count/len(self.table)
 
 
     def fnv1(self, key):
@@ -52,8 +56,21 @@ class HashTable:
 
         Implement this, and/or DJB2.
         """
+        hash_val = FNV1A_64_OFFSET
 
-        # Your code here
+        for character in key:
+
+            # Xor with the current character
+            hash_val ^= ord(character)
+
+            # Multiply by prime
+            hash_val *= FNV1A_64_PRIME
+
+            # Clamp
+            hash_val &= 0xffffffffffffffff
+
+        # Return the final hash as a number
+        return hash_val
 
 
     def djb2(self, key):
@@ -70,8 +87,8 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -81,7 +98,10 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        hash_index = self.hash_index(key)
+        self.table[hash_index] = value
+        self.items_count += 1
+        # print(self.table[hash_index])
 
 
     def delete(self, key):
@@ -92,7 +112,13 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        hash_index = self.hash_index(key)
+        if self.table[hash_index] is None:
+            print("Key not found")
+        else:
+            self.table[hash_index] = None
+            self.items_count -= 1
+
 
 
     def get(self, key):
@@ -103,7 +129,8 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        hash_index = self.hash_index(key)
+        return self.table[hash_index]
 
 
     def resize(self, new_capacity):
