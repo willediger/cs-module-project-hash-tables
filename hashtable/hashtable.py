@@ -99,7 +99,7 @@ class HashTable:
         Implement this.
         """
         hash_index = self.hash_index(key)
-        self.table[hash_index] = value
+        self.table[hash_index] = HashTableEntry(key,value)
         self.items_count += 1
         # print(self.table[hash_index])
 
@@ -130,7 +130,10 @@ class HashTable:
         Implement this.
         """
         hash_index = self.hash_index(key)
-        return self.table[hash_index]
+        if self.table[hash_index]:
+            return self.table[hash_index].value
+        else:
+            return None
 
 
     def resize(self, new_capacity):
