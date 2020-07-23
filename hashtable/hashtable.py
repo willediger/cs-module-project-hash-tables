@@ -11,8 +11,8 @@ class HashTableList:
     def __init__(self, head=None):
         self.head = head
     
-    def insert_at_head(self, key, value)
-        entry = HashTableEntry(key,value)
+    def insert_at_head(self, key, value):
+        entry = HashTableEntry(key, value)
         entry.next = self.head
         self.head = entry
         return entry
@@ -20,15 +20,19 @@ class HashTableList:
     def put(self, key, value):
         curr = self.head
 
-        #if found, update value
+        #if found, update value, returning
+        #in tuple along with 0 to indicate
+        #no entries added to list
         while curr is not None:
             if curr.key == key:
                 curr.value = value
-                return curr
+                return (curr, 0)
             curr = curr.next
         
-        #if not found, insert at head
-        return insert_at_head(key,value)
+        #if not found, insert at head, returning
+        #in tuple along with 1 to indicate
+        #entry added to list
+        return (self.insert_at_head(key,value), 1)
 
     def get(self, key):
         curr = self.head
@@ -36,7 +40,7 @@ class HashTableList:
         #if found return entry
         while curr is not None:
             if curr.key == key:
-                return curr
+                return curr.value
             curr = curr.next
 
         return None
@@ -46,14 +50,16 @@ class HashTableList:
 
         if curr.key == key:
             self.head = curr.next
-            return curr
+            #0 indicates head was last entry
+            return (curr, 0)
         prev = curr
         curr = curr.next
 
         while curr is not None:
             if curr.key == key:
                 prev.next = curr.next
-                return curr
+                #1 indicates head was not last entry
+                return (curr, 1)
             prev = curr
             curr = curr.next
 
@@ -152,9 +158,15 @@ class HashTable:
         Implement this.
         """
         hash_index = self.hash_index(key)
-        self.table[hash_index] = HashTableEntry(key,value)
-        self.items_count += 1
-        # print(self.table[hash_index])
+        if self.table[hash_index] is not None:
+            added = self.table[hash_index].put(key, value)
+            self.items_count += added[1]
+            return added[0]
+        else:
+            node = HashTableEntry(key, value)
+            self.table[hash_index] = HashTableList(node)
+            self.items_count += 1
+            return node
 
 
     def delete(self, key):
@@ -169,8 +181,15 @@ class HashTable:
         if self.table[hash_index] is None:
             print("Key not found")
         else:
-            self.table[hash_index] = None
-            self.items_count -= 1
+            deleted = self.table[hash_index].delete(key)
+
+            if deleted is not None:
+                self.items_count -= 1
+
+            if deleted[1] == 0:
+                self.table[hash_index] = None
+
+            return deleted[0]
 
 
 
@@ -183,10 +202,9 @@ class HashTable:
         Implement this.
         """
         hash_index = self.hash_index(key)
-        if self.table[hash_index]:
-            return self.table[hash_index].value
-        else:
-            return None
+        if self.table[hash_index] is not None:
+            return self.table[hash_index].get(key)
+        return None
 
 
     def resize(self, new_capacity):
