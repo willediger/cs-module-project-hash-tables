@@ -7,6 +7,59 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
+class HashTableList:
+    def __init__(self, head=None):
+        self.head = head
+    
+    def insert_at_head(self, key, value)
+        entry = HashTableEntry(key,value)
+        entry.next = self.head
+        self.head = entry
+        return entry
+    
+    def put(self, key, value):
+        curr = self.head
+
+        #if found, update value
+        while curr is not None:
+            if curr.key == key:
+                curr.value = value
+                return curr
+            curr = curr.next
+        
+        #if not found, insert at head
+        return insert_at_head(key,value)
+
+    def get(self, key):
+        curr = self.head
+
+        #if found return entry
+        while curr is not None:
+            if curr.key == key:
+                return curr
+            curr = curr.next
+
+        return None
+
+    def delete(self, key):
+        curr = self.head
+
+        if curr.key == key:
+            self.head = curr.next
+            return curr
+        prev = curr
+        curr = curr.next
+
+        while curr is not None:
+            if curr.key == key:
+                prev.next = curr.next
+                return curr
+            prev = curr
+            curr = curr.next
+
+        print("Key not found")
+        return None
+
 
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
