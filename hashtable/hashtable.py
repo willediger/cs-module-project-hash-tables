@@ -108,7 +108,6 @@ class HashTable:
         """
         return self.items_count/len(self.table)
 
-
     def fnv1(self, key):
         """
         FNV-1 Hash, 64-bit
@@ -214,7 +213,17 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        self.capacity = new_capacity
+        old_table = self.table
+        self.table = [None] * new_capacity
+
+        curr_bucket = 0
+        while curr_bucket < len(old_table):
+            curr_entry = old_table[curr_bucket].head
+            while curr_entry is not None:
+                self.put(curr_entry.key, curr_entry.value)
+                curr_entry = curr_entry.next
+            curr_bucket += 1
 
 
 
