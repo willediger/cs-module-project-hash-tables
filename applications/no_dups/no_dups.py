@@ -1,6 +1,19 @@
 def no_dups(s):
-    # Your code here
+    if len(s) == 0:
+        return ""
+    words = s.split(' ')
+    uniques = {}
+    for word in words:
+        if word not in uniques:
+            uniques[word] = None
+    
+    no_dupes = ''
+    for key in uniques:
+        no_dupes = no_dupes + ' ' + key
 
+    no_dupes = no_dupes[1:]
+
+    return no_dupes
 
 
 if __name__ == "__main__":
