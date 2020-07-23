@@ -157,14 +157,19 @@ class HashTable:
         Implement this.
         """
         hash_index = self.hash_index(key)
+
         if self.table[hash_index] is not None:
             added = self.table[hash_index].put(key, value)
             self.items_count += added[1]
+            if self.get_load_factor() > 0.7:
+                self.resize(self.capacity*2)
             return added[0]
         else:
             node = HashTableEntry(key, value)
             self.table[hash_index] = HashTableList(node)
             self.items_count += 1
+            if self.get_load_factor() > 0.7:
+                self.resize(self.capacity*2)
             return node
 
 
@@ -184,6 +189,8 @@ class HashTable:
 
             if deleted is not None:
                 self.items_count -= 1
+                if self.get_load_factor() < 0.2:
+                    self.resize(max(self.capacity//2, MIN_CAPACITY))
 
             if deleted[1] == 0:
                 self.table[hash_index] = None
@@ -219,10 +226,11 @@ class HashTable:
 
         curr_bucket = 0
         while curr_bucket < len(old_table):
-            curr_entry = old_table[curr_bucket].head
-            while curr_entry is not None:
-                self.put(curr_entry.key, curr_entry.value)
-                curr_entry = curr_entry.next
+            if old_table[curr_bucket] is not None:
+                curr_entry = old_table[curr_bucket].head
+                while curr_entry is not None:
+                    self.put(curr_entry.key, curr_entry.value)
+                    curr_entry = curr_entry.next
             curr_bucket += 1
 
 
